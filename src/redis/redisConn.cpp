@@ -71,3 +71,15 @@ void redisConn::log(string info, string parm)
 {
     cout << info << parm << endl;
 }
+
+void redisConn::refreshAliveTime()
+{
+    r_aliveTime = chrono::steady_clock::now();
+}
+
+long long redisConn::getAliveTime()
+{
+    chrono::nanoseconds res = chrono::steady_clock::now() - r_aliveTime;
+    chrono::milliseconds millsec = chrono::duration_cast<chrono::milliseconds>(res);
+    return millsec.count();
+}

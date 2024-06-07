@@ -6,12 +6,15 @@
 #include <string>
 #include <memory>
 #include <sstream>
+#include <chrono>
+
 using namespace std;
 
 class redisConn
 {
 private:
     redisContext *r_redis = nullptr;
+    chrono::steady_clock::time_point r_aliveTime;
 
 public:
     redisConn();
@@ -23,6 +26,8 @@ public:
     bool del(string key);
     void log(string info, string parm = "");
     string setCommand(string type, string key, string value = "");
+    void refreshAliveTime();
+    long long getAliveTime();
     ~redisConn();
 };
 
