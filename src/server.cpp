@@ -9,8 +9,10 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>
+#include "getdata.cpp"
+#include <mutex>
 
-pthread_mutex_t mutex;
+mutex s_mutex;
 
 struct sockInfo {
     int fd;
@@ -37,9 +39,9 @@ void* connetFunc(void *arg){
     struct epoll_event ev;
     ev.data.fd = cfd;
     ev.events = EPOLLIN;
-    pthread_mutex_lock(&mutex);
+    s_mutex.lock();
     int ret = epoll_ctl(info->epfd, EPOLL_CTL_ADD, cfd, &ev);
-    pthread_mutex_unlock(&mutex);
+    s_mutex.unlock();
     if(ret == -1){
         delete info;
         errorHandle("epoll ctl add error");
@@ -57,15 +59,19 @@ void *commucationFunc(void *arg){
     int len = recv(curfd, buf, sizeof(buf), 0);
     if(0 == len){
         std::cout << "client quit..." << std::endl;
-        pthread_mutex_lock(&mutex);
+        s_mutex.lock();
         int ret = epoll_ctl(info->epfd, EPOLL_CTL_DEL, curfd, NULL);
-        pthread_mutex_unlock(&mutex);
+        s_mutex.unlock();
         if(-1 == ret){
             delete info;
             errorHandle("epoll ctl del error" + std::to_string(errno));
         }
         close(curfd);
     }else if(len > 0){
+        if(strcasecmp(buf, "GETDATA") == 0){
+            string data = getQuestionnaireData();
+            send(curfd, data.c_str() ,len, 0);
+        }
         std::cout << "client say: " << buf << "ID:"  << std::to_string(pthread_self()) << std::endl;
         send(curfd, buf,len, 0);
     }else {
@@ -106,13 +112,13 @@ void server(){
 
     struct epoll_event evs[1024];
     int size = sizeof(evs) / sizeof(struct epoll_event);
-    ret = pthread_mutex_init(&mutex, NULL);
+    // ret = pthread_mutex_init(&mutex, NULL);
     if(ret == -1) errorHandle("mutex init error");
     while (true)
     {
-        pthread_mutex_lock(&mutex);
+        s_mutex.lock();
         int num = epoll_wait(epfd, evs, size, -1);
-        pthread_mutex_unlock(&mutex);
+        s_mutex.unlock();
         for(int i = 0; i < num; ++i){
             // pthread_mutex_lock(&mutex);
             int curfd = evs[i].data.fd;
@@ -139,7 +145,7 @@ void server(){
         }
     }
     close(lfd);
-    pthread_mutex_destroy(&mutex);
+    // pthread_mutex_destroy(&mutex);
 }
 
 int main(){

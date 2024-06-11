@@ -2,6 +2,8 @@
 
 redisConnPool::redisConnPool()
 {
+    if (!parseJsonFile())
+        return;
     for (int i = 0; i < r_minSize; ++i)
         createConn();
     thread producer(&redisConnPool::produceConn, this);
