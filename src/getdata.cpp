@@ -42,12 +42,10 @@ string getQuestionnaireData(){
      string infos = loadDataFromMysql();
 
     // store it to redis
-    cout << infos << endl;
     redisConnPool *pool = redisConnPool::getRedisConnPool();
     storeDataToRedis(pool, "infos", infos);
 
     // get data from redis
     infos = getDataFromRedis(pool, "infos");
-    cout << infos << endl;
     return infos;
 }
