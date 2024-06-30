@@ -4,7 +4,7 @@
 #include <iostream>
 #include <queue>
 #include "redisConn.h"
-#include "redisConn.cpp"
+// #include "redisConn.cpp"
 #include <thread>
 #include <jsoncpp/json/json.h>
 #include <fstream>

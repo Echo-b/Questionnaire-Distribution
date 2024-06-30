@@ -1,4 +1,4 @@
-#include "getdata.cpp"
+#include "getdata.h"
 
 bool storeDataToRedis(redisConnPool *pool, string key, string value){
     // redisConn *conn = new redisConn();

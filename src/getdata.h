@@ -1,7 +1,7 @@
 #include "mysqlConnPool.h"
-#include "mysqlConnPool.cpp"
+// #include "mysqlConnPool.cpp"
 #include "redisConnPool.h"
-#include "redisConnPool.cpp"
+// #include "redisConnPool.cpp"
 
 
 string loadDataFromMysql(){

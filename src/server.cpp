@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>
-#include "getdata.cpp"
+#include "getdata.h"
 #include <mutex>
 
 mutex s_mutex;
